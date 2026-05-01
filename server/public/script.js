@@ -9,7 +9,7 @@ const observer = new IntersectionObserver(
       }
     });
   },
-  { 
+  {
     threshold: 0.15,
     rootMargin: "0px 0px -50px 0px"
   }
@@ -22,7 +22,7 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
   link.addEventListener("click", (event) => {
     const href = link.getAttribute("href");
     const target = document.querySelector(href);
-    
+
     if (target) {
       event.preventDefault();
       const headerOffset = 80;

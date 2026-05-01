@@ -4,6 +4,7 @@ const os = require('os');
 
 const app = express();
 const PORT = 3000;
+const HOST = '0.0.0.0';
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -19,10 +20,10 @@ function getLocalIP() {
     return '127.0.0.1';
 }
 
-app.listen(PORT, () => {
+app.listen(PORT, HOST, () => {
     const ip = getLocalIP();
     console.log(`==========================================`);
-    console.log(` Aura Quantum Ludo Server is running!`);
+    console.log(` Ludo by AnA Devyra Server is running!`);
     console.log(` Access on local network: http://${ip}:${PORT}`);
     console.log(`==========================================`);
 });

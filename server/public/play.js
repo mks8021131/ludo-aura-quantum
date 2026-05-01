@@ -23,11 +23,10 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
 
 const board = document.getElementById("board");
 const diceButton = document.getElementById("diceButton");
-const diceCube = document.getElementById("diceCube");
+const diceValue = document.getElementById("diceValue");
 const helperText = document.getElementById("helperText");
 const turnName = document.getElementById("turnName");
 const turnDot = document.getElementById("turnDot");
-const turnCard = document.getElementById("turnCard");
 const turnState = document.getElementById("turnState");
 const scoreGrid = document.getElementById("scoreGrid");
 const eventLog = document.getElementById("eventLog");
@@ -71,6 +70,11 @@ const track = [
 ];
 
 const safeCells = new Set([0, 8, 13, 21, 26, 34, 39, 47]);
+const GAME_STATES = Object.freeze({
+  IDLE: "idle",
+  PLAYING: "playing",
+  FINISHED: "finished",
+});
 let state;
 let audioContext;
 let timerId;
@@ -80,8 +84,10 @@ function createState() {
   return {
     players: colors.slice(0, playerCount).map((color) => ({
       ...color,
+      finishedTokens: 0,
       tokens: Array.from({ length: 4 }, (_, id) => ({ id, pos: -1, finished: false })),
     })),
+    gameState: GAME_STATES.IDLE,
     current: 0,
     dice: null,
     rolled: false,
@@ -116,9 +122,31 @@ function boardPosition(player, token) {
 }
 
 function canMove(player, token) {
+  if (state.gameState === GAME_STATES.FINISHED) return false;
   if (!state.rolled || state.rolling || state.moving || state.winner || token.finished) return false;
   if (token.pos === -1) return state.dice === 6;
   return token.pos + state.dice <= 57;
+}
+
+function checkWinner(player) {
+  console.log("[Ludo] Winner check", {
+    player: player.label,
+    gameState: state.gameState,
+    finishedTokens: player.finishedTokens,
+  });
+
+  if (state.gameState !== GAME_STATES.PLAYING) return false;
+  if (player.finishedTokens !== 4) return false;
+
+  state.gameState = GAME_STATES.FINISHED;
+  state.winner = player;
+  addLog(`${player.label} wins the match.`);
+  return true;
+}
+
+function normalizeGameState(value, winner) {
+  if (Object.values(GAME_STATES).includes(value)) return value;
+  return winner ? GAME_STATES.FINISHED : GAME_STATES.IDLE;
 }
 
 function movableTokens() {
@@ -167,13 +195,13 @@ function renderBoardBase() {
 function render() {
   const player = state.players[state.current];
   turnName.textContent = state.winner ? `${state.winner.label} Wins` : player.label;
-  turnDot.style.backgroundColor = player.css;
-  turnDot.style.color = player.css; // For box-shadow currentColor
+  turnDot.style.background = player.css;
+  turnDot.style.boxShadow = `0 0 18px ${player.css}`;
   turnState.textContent = state.winner ? "Game over" : state.rolling ? "Rolling" : state.moving ? "Moving" : state.rolled ? "Choose token" : "Roll dice";
-  
+  diceButton.disabled = state.rolling || state.moving || state.rolled || Boolean(state.winner);
   bestMoveButton.disabled = state.rolling || state.moving || !state.rolled || Boolean(state.winner) || !movableTokens().length;
   undoButton.disabled = state.rolling || state.moving || !state.history.length;
-  
+  renderDice();
   helperText.textContent = helperMessage();
   rollCount.textContent = state.rolls;
   captureCount.textContent = state.captures;
@@ -190,14 +218,31 @@ function render() {
   renderLog();
 }
 
+function renderDice() {
+  if (!state.rolling && !state.rolled) {
+    diceValue.textContent = "ROLL";
+    return;
+  }
+  const value = state.dice || 1;
+  const activePips = {
+    1: [4],
+    2: [0, 8],
+    3: [0, 4, 8],
+    4: [0, 2, 6, 8],
+    5: [0, 2, 4, 6, 8],
+    6: [0, 2, 3, 5, 6, 8],
+  }[value];
+  diceValue.innerHTML = `<span class="dice-face">${Array.from({ length: 9 }, (_, index) => `<span class="pip ${activePips.includes(index) ? "on" : ""}"></span>`).join("")}</span>`;
+}
+
 function helperMessage() {
-  if (state.winner) return "Match finished! Play again?";
-  if (state.rolling) return "Aura Engine rolling...";
-  if (state.moving) return "Quantum field adjusting...";
-  if (!state.rolled) return "Tap the dice to roll.";
+  if (state.winner) return "Start a new game to play again.";
+  if (state.rolling) return "Dice is rolling...";
+  if (state.moving) return "Token is moving step by step.";
+  if (!state.rolled) return "Roll to begin. A 6 opens a token from base.";
   const moves = movableTokens().length;
   if (moves === 0) return "No legal moves. Passing turn.";
-  return `${moves} valid move${moves === 1 ? "" : "s"}. Tap a glowing token.`;
+  return `${moves} legal move${moves === 1 ? "" : "s"} highlighted. Tap a glowing token.`;
 }
 
 function renderHints() {
@@ -216,8 +261,6 @@ function renderHints() {
 
 function renderTokens() {
   const occupancy = new Map();
-  const currentPlayer = state.players[state.current];
-  
   state.players.forEach((player) => {
     player.tokens.forEach((token) => {
       const [row, col] = boardPosition(player, token);
@@ -235,12 +278,9 @@ function renderTokens() {
       const offset = stack * 0.82;
       Object.assign(tokenEl.style, cellToStyle(row, col, 0.78 + offset));
 
-      if (player === currentPlayer && !state.winner) {
-        tokenEl.classList.add("active-player-token");
-        if (canMove(player, token)) {
-          tokenEl.classList.add("movable");
-          tokenEl.addEventListener("click", () => moveToken(player, token));
-        }
+      if (player === state.players[state.current] && canMove(player, token)) {
+        tokenEl.classList.add("movable");
+        tokenEl.addEventListener("click", () => moveToken(player, token));
       }
 
       board.appendChild(tokenEl);
@@ -251,7 +291,7 @@ function renderTokens() {
 function renderScores() {
   scoreGrid.innerHTML = "";
   state.players.forEach((player, index) => {
-    const finished = player.tokens.filter((token) => token.finished).length;
+    const finished = player.finishedTokens;
     const progress = player.tokens.reduce((sum, token) => sum + Math.max(0, token.finished ? 57 : token.pos), 0);
     const active = index === state.current && !state.winner;
     const card = document.createElement("article");
@@ -261,7 +301,7 @@ function renderScores() {
       <span class="score-dot"></span>
       <span>
         <span class="score-name">${player.label}</span>
-        <span class="score-meta">${player.tokens.filter((t) => t.pos >= 0 && !t.finished).length} active</span>
+        <span class="score-meta">${player.tokens.filter((t) => t.pos >= 0 && !t.finished).length} active, ${player.tokens.filter((t) => t.pos === -1).length} in base</span>
       </span>
       <span class="score-finished">${finished}/4</span>
       <span class="progress-track"><span class="progress-fill" style="width: ${Math.min(100, (progress / 228) * 100)}%"></span></span>
@@ -280,73 +320,86 @@ function renderLog() {
 }
 
 async function rollDice() {
-  if (state.rolling || state.moving || state.rolled || state.winner) return;
+  if (state.gameState === GAME_STATES.FINISHED || state.rolling || state.moving || state.rolled || state.winner) return;
   pushHistory();
   state.rolling = true;
-  diceCube.classList.add("rolling");
+  diceButton.classList.add("rolling");
   pulse("dice");
-  playTone(200, 0.08, "triangle");
+  playTone(180, 0.06, "triangle");
 
   const result = Math.floor(Math.random() * 6) + 1;
-  await wait(800); // Wait for CSS animation
+  const started = performance.now();
+  while (performance.now() - started < 500) {
+    state.dice = Math.floor(Math.random() * 6) + 1;
+    render();
+    await wait(65);
+  }
 
   state.dice = result;
   state.rolls += 1;
   state.rolling = false;
   state.rolled = true;
-  diceCube.classList.remove("rolling");
-  
-  // 3D Rotation Mapping
-  const rotations = {
-    1: 'rotateX(0deg) rotateY(0deg)',
-    2: 'rotateX(-90deg) rotateY(0deg)',
-    3: 'rotateX(0deg) rotateY(-90deg)',
-    4: 'rotateX(0deg) rotateY(90deg)',
-    5: 'rotateX(90deg) rotateY(0deg)',
-    6: 'rotateX(180deg) rotateY(0deg)'
-  };
-  diceCube.style.transform = rotations[result];
-  
+  diceButton.classList.remove("rolling");
+  console.log("[Ludo] Dice roll", {
+    player: state.players[state.current].label,
+    result,
+    gameState: state.gameState,
+  });
   addLog(`${state.players[state.current].label} rolled ${result}.`);
   render();
-  await wait(150);
+  await wait(120);
 
   if (!movableTokens().length) {
-    await wait(800);
+    await wait(650);
     nextTurn();
   }
 }
 
 async function moveToken(player, token) {
+  if (state.gameState === GAME_STATES.FINISHED) return;
+  if (player !== state.players[state.current]) return;
   if (!canMove(player, token)) return;
   if (!state.rolling && !state.moving) pushHistory();
+  if (state.gameState === GAME_STATES.IDLE) state.gameState = GAME_STATES.PLAYING;
   state.moving = true;
+  console.log("[Ludo] Token move", {
+    player: player.label,
+    token: token.id,
+    from: token.pos,
+    dice: state.dice,
+    gameState: state.gameState,
+  });
   render();
-
-  await wait(200); // Premium delay before move
 
   if (token.pos === -1) {
     token.pos = 0;
-    playTone(400, 0.06, "sine");
+    playTone(360, 0.05, "sine");
     pulse("move");
     render();
     bounceToken(player, token);
-    await wait(250);
+    await wait(180);
   } else {
     for (let step = 0; step < state.dice; step += 1) {
       token.pos += 1;
-      playTone(350 + step * 20, 0.05, "sine");
+      playTone(300 + step * 18, 0.04, "sine");
       render();
       bounceToken(player, token);
-      await wait(220); // Slower, smoother movement
+      await wait(145);
     }
   }
 
   let captured = false;
-  if (token.pos === 57) {
+  if (token.pos === 57 && !token.finished) {
     token.finished = true;
-    addLog(`${player.label} completed a token!`);
-    playTone(600, 0.15, "triangle");
+    player.finishedTokens = Math.min(4, player.finishedTokens + 1);
+    console.log("[Ludo] Token finished", {
+      player: player.label,
+      token: token.id,
+      finishedTokens: player.finishedTokens,
+      gameState: state.gameState,
+    });
+    addLog(`${player.label} finished a token.`);
+    playTone(640, 0.12, "triangle");
   } else if (token.pos < 52) {
     captured = captureAt(player, token);
   }
@@ -355,13 +408,11 @@ async function moveToken(player, token) {
     state.captures += 1;
     board.classList.add("capture");
     pulse("kill");
-    playTone(150, 0.2, "sawtooth");
+    playTone(120, 0.16, "sawtooth");
     setTimeout(() => board.classList.remove("capture"), 350);
   }
 
-  if (player.tokens.every((item) => item.finished)) {
-    state.winner = player;
-    addLog(`${player.label} is the champion!`);
+  if (checkWinner(player)) {
     state.moving = false;
     render();
     return;
@@ -418,7 +469,7 @@ function captureAt(player, token) {
       if (absolutePosition(opponent, other.pos) === absolute) {
         other.pos = -1;
         captured = true;
-        addLog(`${player.label} captured ${opponent.label}!`);
+        addLog(`${player.label} captured ${opponent.label}.`);
       }
     });
   });
@@ -435,7 +486,7 @@ function bounceToken(player, token) {
 }
 
 function nextTurn() {
-  if (state.winner) return;
+  if (state.winner || state.gameState === GAME_STATES.FINISHED) return;
   state.current = (state.current + 1) % state.players.length;
   state.rolled = false;
   state.rolling = false;
@@ -453,8 +504,10 @@ function pushHistory() {
   state.history.push(JSON.stringify({
     players: state.players.map((player) => ({
       id: player.id,
+      finishedTokens: player.finishedTokens,
       tokens: player.tokens.map((token) => ({ ...token })),
     })),
+    gameState: state.gameState,
     current: state.current,
     dice: state.dice,
     rolled: state.rolled,
@@ -472,12 +525,14 @@ function undoLast() {
   state.players.forEach((player) => {
     const saved = snapshot.players.find((item) => item.id === player.id);
     if (!saved) return;
+    player.finishedTokens = saved.finishedTokens || 0;
     player.tokens.forEach((token, index) => Object.assign(token, saved.tokens[index]));
   });
+  state.gameState = normalizeGameState(snapshot.gameState, snapshot.winner);
   state.current = snapshot.current;
   state.dice = snapshot.dice;
   state.rolled = snapshot.rolled;
-  state.winner = snapshot.winner ? state.players.find((player) => player.id === snapshot.winner) : null;
+  state.winner = snapshot.winner ? state.players.find((player) => player.id === snapshot.winner) : null;        
   state.rolls = snapshot.rolls;
   state.captures = snapshot.captures;
   state.log = ["Undo applied.", ...snapshot.log];
@@ -493,7 +548,7 @@ function updateTimer() {
 }
 
 function updateWinnerOverlay() {
-  if (!state.winner) {
+  if (!state.winner || state.gameState !== GAME_STATES.FINISHED) {
     winnerOverlay.hidden = true;
     return;
   }
