@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ludo by AnA Devyra</title>
+    <meta
+      name="description"
+      content="Play Ludo by AnA Devyra in the browser. Offline local multiplayer experience."
+    />
+    <link rel="stylesheet" href="play.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="Ludo by AnA Devyra">
+        <span class="brand-mark"></span>
+        <span>Ludo by AnA Devyra</span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="#play">Play</a>
+        <a href="https://drive.google.com/file/d/17WfFdDR10OgoSSs1e9fUaWAR7CW8P-Ax/view?usp=sharing" target="_blank" class="nav-download">Download APK</a>
+      </nav>
+    </header>
+
+    <main>
+      <section id="play" class="play-shell">
+        <div class="intro-panel reveal">
+          <p class="eyebrow">Playable Web Edition</p>
+          <h1>Ludo by AnA Devyra</h1>
+          <p class="hero-text">
+            Roll the dice, move tokens step by step, capture rivals, and play a fast
+            local match directly in the browser.
+          </p>
+
+          <div class="quick-actions">
+            <button class="primary-button" id="newGameButton" type="button">New Game</button>
+            <button class="ghost-button" id="undoButton" type="button">Undo</button>
+            <button class="ghost-button" id="fullscreenButton" type="button">Fullscreen</button>
+          </div>
+
+          <div class="settings-row" aria-label="Game settings">
+            <label>
+              Players
+              <select id="playerCount">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4" selected>4</option>
+              </select>
+            </label>
+            <label>
+              Theme
+              <select id="themeSelect">
+                <option value="aura" selected>Aura</option>
+                <option value="royal">Royal</option>
+                <option value="ember">Ember</option>
+              </select>
+            </label>
+            <label class="toggle-row">
+              <input id="assistToggle" type="checkbox" checked />
+              Assist
+            </label>
+            <label class="toggle-row">
+              <input id="soundToggle" type="checkbox" checked />
+              Sound
+            </label>
+            <label class="toggle-row">
+              <input id="hapticToggle" type="checkbox" checked />
+              Haptic
+            </label>
+          </div>
+
+          <div class="turn-card" id="turnCard">
+            <span class="turn-dot" id="turnDot"></span>
+            <div>
+              <span class="label">Current Turn</span>
+              <strong id="turnName">Red</strong>
+            </div>
+            <span class="turn-state" id="turnState">Roll dice</span>
+          </div>
+        </div>
+
+        <section class="game-panel reveal" aria-label="Playable Ludo game">
+          <div class="board-wrap">
+            <div class="ludo-board" id="board" aria-label="Ludo board"></div>
+          </div>
+
+          <aside class="control-panel">
+            <div class="dice-zone">
+              <button class="dice-button" id="diceButton" type="button" aria-label="Roll dice">
+                <span id="diceValue">ROLL</span>
+              </button>
+              <button class="mini-action" id="bestMoveButton" type="button">Best Move</button>
+              <p id="helperText">Roll to begin. A 6 opens a token from base.</p>
+            </div>
+
+            <div class="stats-panel">
+              <div>
+                <span class="label">Rolls</span>
+                <strong id="rollCount">0</strong>
+              </div>
+              <div>
+                <span class="label">Captures</span>
+                <strong id="captureCount">0</strong>
+              </div>
+              <div>
+                <span class="label">Time</span>
+                <strong id="matchTime">00:00</strong>
+              </div>
+            </div>
+
+            <div class="score-grid" id="scoreGrid" aria-label="Player scores"></div>
+
+            <div class="log-panel">
+              <div class="panel-title">Match Feed</div>
+              <ul id="eventLog"></ul>
+            </div>
+          </aside>
+        </section>
+      </section>
+
+      <div class="winner-overlay" id="winnerOverlay" hidden>
+        <div class="winner-card">
+          <p class="eyebrow">Match Complete</p>
+          <h2 id="winnerTitle">Red Wins</h2>
+          <p id="winnerSummary">Start a new match or download the APK for the full Android build.</p>
+          <button class="primary-button" id="winnerNewGame" type="button">New Game</button>
+        </div>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <span>Ludo by AnA Devyra</span>
+      <span>Open this same URL on your phone while connected to the same WiFi.</span>
+    </footer>
+
+    <script src="play.js"></script>
+  </body>
+</html>
