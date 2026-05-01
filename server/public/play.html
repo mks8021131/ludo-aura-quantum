@@ -3,34 +3,36 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Play Ludo | Aura Quantum</title>
+    <title>Ludo by AnA Devyra | Premium 3D Experience</title>
     <meta
       name="description"
-      content="Play Aura Quantum Ludo in the browser. Offline local multiplayer experience."
+      content="Play Ludo by AnA Devyra. The ultimate premium offline local multiplayer experience reimagined with 3D physics and neon aesthetics."
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="play.css" />
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="index.html" aria-label="Aura Quantum Ludo">
+      <a class="brand" href="index.html" aria-label="Ludo by AnA Devyra">
         <span class="brand-mark"></span>
-        <span>Aura Quantum Ludo</span>
+        <span>LUDO<br><small style="font-size: 0.5rem; letter-spacing: 2px;">by AnA Devyra</small></span>
       </a>
       <nav class="nav-links" aria-label="Main navigation">
         <a href="index.html">Home</a>
         <a href="#play">Play</a>
-        <a href="https://drive.google.com/file/d/17WfFdDR10OgoSSs1e9fUaWAR7CW8P-Ax/view?usp=sharing" target="_blank" class="nav-download">Download APK</a>
+        <a href="https://github.com/Vritra/ludo-aura-quantum/releases/latest/download/app-release.apk" class="nav-download">Download APK</a>
       </nav>
     </header>
 
     <main>
       <section id="play" class="play-shell">
         <div class="intro-panel reveal">
-          <p class="eyebrow">Playable Web Edition</p>
-          <h1>Aura Quantum Ludo</h1>
+          <p class="eyebrow">PREMIUM WEB EDITION</p>
+          <h1 style="font-family: 'Orbitron', sans-serif;">Ludo <br><span style="color: var(--primary);">Aura Quantum</span></h1>
           <p class="hero-text">
-            Roll the dice, move tokens step by step, capture rivals, and play a fast
-            local match directly in the browser.
+            Experience board game nights elevated by AnA Devyra. Real 3D dice, neon tricolor effects, and buttery-smooth glassmorphism UI.
           </p>
 
           <div class="quick-actions">
@@ -74,7 +76,7 @@
             <span class="turn-dot" id="turnDot"></span>
             <div>
               <span class="label">Current Turn</span>
-              <strong id="turnName">Red</strong>
+              <strong id="turnName" style="font-size: 20px; font-weight: 900;">Red</strong>
             </div>
             <span class="turn-state" id="turnState">Roll dice</span>
           </div>
@@ -87,11 +89,42 @@
 
           <aside class="control-panel">
             <div class="dice-zone">
-              <button class="dice-button" id="diceButton" type="button" aria-label="Roll dice">
-                <span id="diceValue">ROLL</span>
-              </button>
-              <button class="mini-action" id="bestMoveButton" type="button">Best Move</button>
-              <p id="helperText">Roll to begin. A 6 opens a token from base.</p>
+              <div class="dice-container" id="diceButton">
+                <div class="dice-cube" id="diceCube">
+                  <div class="dice-face face-front" data-value="1">
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                  </div>
+                  <div class="dice-face face-back" data-value="6">
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                  </div>
+                  <div class="dice-face face-right" data-value="3">
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                  </div>
+                  <div class="dice-face face-left" data-value="4">
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                  </div>
+                  <div class="dice-face face-top" data-value="2">
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                  </div>
+                  <div class="dice-face face-bottom" data-value="5">
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                    <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+                  </div>
+                </div>
+              </div>
+              <button class="primary-button" style="padding: 8px 16px; min-height: auto; font-size: 11px; margin-bottom: 12px;" id="bestMoveButton" type="button">BEST MOVE</button>
+              <p id="helperText" style="font-size: 12px; color: var(--muted); margin: 0;">Roll to begin.</p>
             </div>
 
             <div class="stats-panel">
@@ -121,17 +154,17 @@
 
       <div class="winner-overlay" id="winnerOverlay" hidden>
         <div class="winner-card">
-          <p class="eyebrow">Match Complete</p>
-          <h2 id="winnerTitle">Red Wins</h2>
+          <p class="eyebrow" style="color: var(--gold);">CHAMPION DECLARED</p>
+          <h2 id="winnerTitle" style="font-family: 'Orbitron', sans-serif;">Red Wins</h2>
           <p id="winnerSummary">Start a new match or download the APK for the full Android build.</p>
-          <button class="primary-button" id="winnerNewGame" type="button">New Game</button>
+          <button class="primary-button" id="winnerNewGame" type="button">Play Again</button>
         </div>
       </div>
     </main>
 
     <footer class="site-footer">
-      <span>Aura Quantum Ludo</span>
-      <span>Open this same URL on your phone while connected to the same WiFi.</span>
+      <span>LUDO by AnA Devyra</span>
+      <span>Experience the tricolor premium quality.</span>
     </footer>
 
     <script src="play.js"></script>
