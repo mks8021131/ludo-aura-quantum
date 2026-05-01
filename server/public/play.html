@@ -1,170 +1,139 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ludo Aura Quantum — Next Gen Premium Experience</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Plus+Jakarta+Sans:wght@400;600;800&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="play.css">
-</head>
-<body class="theme-neon">
-  <header class="site-header">
-    <div class="brand">
-      <div class="brand-mark"></div>
-      <span>LUDO AURA QUANTUM</span>
-    </div>
-    <nav class="nav-links">
-      <a href="index.html">Home</a>
-      <a href="#board">Game</a>
-      <button class="btn btn-primary" id="openSettings">Settings</button>
-    </nav>
-  </header>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Play Ludo | Aura Quantum</title>
+    <meta
+      name="description"
+      content="Play Aura Quantum Ludo in the browser. Offline local multiplayer experience."
+    />
+    <link rel="stylesheet" href="play.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="index.html" aria-label="Aura Quantum Ludo">
+        <span class="brand-mark"></span>
+        <span>Aura Quantum Ludo</span>
+      </a>
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="index.html">Home</a>
+        <a href="#play">Play</a>
+        <a href="https://drive.google.com/file/d/17WfFdDR10OgoSSs1e9fUaWAR7CW8P-Ax/view?usp=sharing" target="_blank" class="nav-download">Download APK</a>
+      </nav>
+    </header>
 
-  <main class="play-shell">
-    <aside class="side-panel">
-      <section class="glass-panel turn-card">
-        <span class="label">Current Turn</span>
-        <div class="turn-info" style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
-          <div id="turnDot" class="turn-dot"></div>
-          <h2 id="turnName" style="margin: 0;">Red</h2>
-        </div>
-        <p id="turnState" class="turn-state">Roll dice</p>
-      </section>
+    <main>
+      <section id="play" class="play-shell">
+        <div class="intro-panel reveal">
+          <p class="eyebrow">Playable Web Edition</p>
+          <h1>Aura Quantum Ludo</h1>
+          <p class="hero-text">
+            Roll the dice, move tokens step by step, capture rivals, and play a fast
+            local match directly in the browser.
+          </p>
 
-      <section class="glass-panel dice-zone" style="padding: 32px; text-align: center; margin-bottom: 24px;">
-        <div class="dice-container" id="diceButton">
-          <div class="dice-cube" id="diceCube">
-            <div class="dice-face face-front" data-value="1">
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+          <div class="quick-actions">
+            <button class="primary-button" id="newGameButton" type="button">New Game</button>
+            <button class="ghost-button" id="undoButton" type="button">Undo</button>
+            <button class="ghost-button" id="fullscreenButton" type="button">Fullscreen</button>
+          </div>
+
+          <div class="settings-row" aria-label="Game settings">
+            <label>
+              Players
+              <select id="playerCount">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4" selected>4</option>
+              </select>
+            </label>
+            <label>
+              Theme
+              <select id="themeSelect">
+                <option value="aura" selected>Aura</option>
+                <option value="royal">Royal</option>
+                <option value="ember">Ember</option>
+              </select>
+            </label>
+            <label class="toggle-row">
+              <input id="assistToggle" type="checkbox" checked />
+              Assist
+            </label>
+            <label class="toggle-row">
+              <input id="soundToggle" type="checkbox" checked />
+              Sound
+            </label>
+            <label class="toggle-row">
+              <input id="hapticToggle" type="checkbox" checked />
+              Haptic
+            </label>
+          </div>
+
+          <div class="turn-card" id="turnCard">
+            <span class="turn-dot" id="turnDot"></span>
+            <div>
+              <span class="label">Current Turn</span>
+              <strong id="turnName">Red</strong>
             </div>
-            <div class="dice-face face-back" data-value="6">
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-            </div>
-            <div class="dice-face face-right" data-value="3">
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-            </div>
-            <div class="dice-face face-left" data-value="4">
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-            </div>
-            <div class="dice-face face-top" data-value="2">
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-            </div>
-            <div class="dice-face face-bottom" data-value="5">
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
-            </div>
+            <span class="turn-state" id="turnState">Roll dice</span>
           </div>
         </div>
-        <p id="helperText" style="margin-top: 20px; font-size: 0.9rem; color: var(--text-secondary);">Tap to roll</p>
+
+        <section class="game-panel reveal" aria-label="Playable Ludo game">
+          <div class="board-wrap">
+            <div class="ludo-board" id="board" aria-label="Ludo board"></div>
+          </div>
+
+          <aside class="control-panel">
+            <div class="dice-zone">
+              <button class="dice-button" id="diceButton" type="button" aria-label="Roll dice">
+                <span id="diceValue">ROLL</span>
+              </button>
+              <button class="mini-action" id="bestMoveButton" type="button">Best Move</button>
+              <p id="helperText">Roll to begin. A 6 opens a token from base.</p>
+            </div>
+
+            <div class="stats-panel">
+              <div>
+                <span class="label">Rolls</span>
+                <strong id="rollCount">0</strong>
+              </div>
+              <div>
+                <span class="label">Captures</span>
+                <strong id="captureCount">0</strong>
+              </div>
+              <div>
+                <span class="label">Time</span>
+                <strong id="matchTime">00:00</strong>
+              </div>
+            </div>
+
+            <div class="score-grid" id="scoreGrid" aria-label="Player scores"></div>
+
+            <div class="log-panel">
+              <div class="panel-title">Match Feed</div>
+              <ul id="eventLog"></ul>
+            </div>
+          </aside>
+        </section>
       </section>
 
-      <section class="glass-panel stats-panel" style="padding: 24px; margin-bottom: 24px;">
-        <div class="score-grid" id="scoreGrid"></div>
-      </section>
-    </aside>
-
-    <div class="game-area">
-      <div id="board" class="ludo-board"></div>
-      
-      <div class="actions-row" style="display: flex; gap: 12px; margin-top: 24px;">
-        <button id="newGameButton" class="btn">New Game</button>
-        <button id="undoButton" class="btn">Undo</button>
-        <button id="bestMoveButton" class="btn">Best Move</button>
-      </div>
-    </div>
-  </main>
-
-  <div class="settings-overlay" id="settingsOverlay">
-    <div class="glass-panel settings-modal">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
-        <h2 style="margin: 0;">Settings</h2>
-        <button id="closeSettings" class="btn" style="padding: 4px 12px;">&times;</button>
-      </div>
-
-      <div class="settings-group">
-        <h3>Gameplay</h3>
-        <div class="setting-row">
-          <span>Players</span>
-          <select id="playerCount">
-            <option value="2">2 Players</option>
-            <option value="3">3 Players</option>
-            <option value="4" selected>4 Players</option>
-          </select>
-        </div>
-        <div class="setting-row">
-          <span>Turn Speed</span>
-          <select id="turnSpeed">
-            <option value="slow">Slow</option>
-            <option value="normal" selected>Normal</option>
-            <option value="fast">Fast</option>
-          </select>
-        </div>
-        <div class="setting-row">
-          <span>Auto-Play</span>
-          <input type="checkbox" id="autoPlayToggle">
+      <div class="winner-overlay" id="winnerOverlay" hidden>
+        <div class="winner-card">
+          <p class="eyebrow">Match Complete</p>
+          <h2 id="winnerTitle">Red Wins</h2>
+          <p id="winnerSummary">Start a new match or download the APK for the full Android build.</p>
+          <button class="primary-button" id="winnerNewGame" type="button">New Game</button>
         </div>
       </div>
+    </main>
 
-      <div class="settings-group">
-        <h3>Appearance</h3>
-        <div class="setting-row">
-          <span>Theme</span>
-          <select id="themeSelect">
-            <option value="neon" selected>Dark Neon</option>
-            <option value="aura">Bright Aura</option>
-            <option value="classic">Classic Board</option>
-          </select>
-        </div>
-        <div class="setting-row">
-          <span>Board Style</span>
-          <select id="boardStyle">
-            <option value="flat">Flat</option>
-            <option value="glass">Glass</option>
-            <option value="gradient" selected>Gradient</option>
-          </select>
-        </div>
-      </div>
+    <footer class="site-footer">
+      <span>Aura Quantum Ludo</span>
+      <span>Open this same URL on your phone while connected to the same WiFi.</span>
+    </footer>
 
-      <div class="settings-group">
-        <h3>Effects</h3>
-        <div class="setting-row">
-          <span>Sound</span>
-          <input type="checkbox" id="soundToggle" checked>
-        </div>
-        <div class="setting-row">
-          <span>Vibration</span>
-          <input type="checkbox" id="hapticToggle" checked>
-        </div>
-      </div>
-
-      <div style="margin-top: 32px; display: flex; gap: 12px;">
-        <button class="btn btn-primary" id="resetGameBtn" style="flex: 1;">Reset Game</button>
-        <button class="btn" id="resetSettingsBtn">Reset Settings</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="winnerOverlay" class="winner-overlay" hidden>
-    <div class="glass-panel winner-card">
-      <h1 id="winnerTitle" class="text-gradient">Red Wins!</h1>
-      <p id="winnerSummary">Match Summary</p>
-      <button id="winnerNewGame" class="btn btn-primary" style="margin-top: 24px;">Play Again</button>
-    </div>
-  </div>
-
-  <script src="play.js"></script>
-</body>
+    <script src="play.js"></script>
+  </body>
 </html>

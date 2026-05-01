@@ -3,9 +3,9 @@ const path = require('path');
 const os = require('os');
 
 const app = express();
-const PORT = 4000;
+const PORT = 3000;
 
-app.use(express.static(path.join(__dirname, '..')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 function getLocalIP() {
     const interfaces = os.networkInterfaces();
