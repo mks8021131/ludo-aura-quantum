@@ -1,0 +1,28 @@
+const express = require('express');
+const path = require('path');
+const os = require('os');
+
+const app = express();
+const PORT = 4000;
+
+app.use(express.static(path.join(__dirname, '..')));
+
+function getLocalIP() {
+    const interfaces = os.networkInterfaces();
+    for (const name of Object.keys(interfaces)) {
+        for (const iface of interfaces[name]) {
+            if (iface.family === 'IPv4' && !iface.internal) {
+                return iface.address;
+            }
+        }
+    }
+    return '127.0.0.1';
+}
+
+app.listen(PORT, () => {
+    const ip = getLocalIP();
+    console.log(`==========================================`);
+    console.log(` Aura Quantum Ludo Server is running!`);
+    console.log(` Access on local network: http://${ip}:${PORT}`);
+    console.log(`==========================================`);
+});

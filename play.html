@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ludo Aura Quantum — Next Gen Premium Experience</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Plus+Jakarta+Sans:wght@400;600;800&family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="play.css">
+</head>
+<body class="theme-neon">
+  <header class="site-header">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <span>LUDO AURA QUANTUM</span>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="#board">Game</a>
+      <button class="btn btn-primary" id="openSettings">Settings</button>
+    </nav>
+  </header>
+
+  <main class="play-shell">
+    <aside class="side-panel">
+      <section class="glass-panel turn-card">
+        <span class="label">Current Turn</span>
+        <div class="turn-info" style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+          <div id="turnDot" class="turn-dot"></div>
+          <h2 id="turnName" style="margin: 0;">Red</h2>
+        </div>
+        <p id="turnState" class="turn-state">Roll dice</p>
+      </section>
+
+      <section class="glass-panel dice-zone" style="padding: 32px; text-align: center; margin-bottom: 24px;">
+        <div class="dice-container" id="diceButton">
+          <div class="dice-cube" id="diceCube">
+            <div class="dice-face face-front" data-value="1">
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+            </div>
+            <div class="dice-face face-back" data-value="6">
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+            </div>
+            <div class="dice-face face-right" data-value="3">
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+            </div>
+            <div class="dice-face face-left" data-value="4">
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+            </div>
+            <div class="dice-face face-top" data-value="2">
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+            </div>
+            <div class="dice-face face-bottom" data-value="5">
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+              <div class="pip"></div><div class="pip"></div><div class="pip"></div>
+            </div>
+          </div>
+        </div>
+        <p id="helperText" style="margin-top: 20px; font-size: 0.9rem; color: var(--text-secondary);">Tap to roll</p>
+      </section>
+
+      <section class="glass-panel stats-panel" style="padding: 24px; margin-bottom: 24px;">
+        <div class="score-grid" id="scoreGrid"></div>
+      </section>
+    </aside>
+
+    <div class="game-area">
+      <div id="board" class="ludo-board"></div>
+      
+      <div class="actions-row" style="display: flex; gap: 12px; margin-top: 24px;">
+        <button id="newGameButton" class="btn">New Game</button>
+        <button id="undoButton" class="btn">Undo</button>
+        <button id="bestMoveButton" class="btn">Best Move</button>
+      </div>
+    </div>
+  </main>
+
+  <div class="settings-overlay" id="settingsOverlay">
+    <div class="glass-panel settings-modal">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <h2 style="margin: 0;">Settings</h2>
+        <button id="closeSettings" class="btn" style="padding: 4px 12px;">&times;</button>
+      </div>
+
+      <div class="settings-group">
+        <h3>Gameplay</h3>
+        <div class="setting-row">
+          <span>Players</span>
+          <select id="playerCount">
+            <option value="2">2 Players</option>
+            <option value="3">3 Players</option>
+            <option value="4" selected>4 Players</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <span>Turn Speed</span>
+          <select id="turnSpeed">
+            <option value="slow">Slow</option>
+            <option value="normal" selected>Normal</option>
+            <option value="fast">Fast</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <span>Auto-Play</span>
+          <input type="checkbox" id="autoPlayToggle">
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Appearance</h3>
+        <div class="setting-row">
+          <span>Theme</span>
+          <select id="themeSelect">
+            <option value="neon" selected>Dark Neon</option>
+            <option value="aura">Bright Aura</option>
+            <option value="classic">Classic Board</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <span>Board Style</span>
+          <select id="boardStyle">
+            <option value="flat">Flat</option>
+            <option value="glass">Glass</option>
+            <option value="gradient" selected>Gradient</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <h3>Effects</h3>
+        <div class="setting-row">
+          <span>Sound</span>
+          <input type="checkbox" id="soundToggle" checked>
+        </div>
+        <div class="setting-row">
+          <span>Vibration</span>
+          <input type="checkbox" id="hapticToggle" checked>
+        </div>
+      </div>
+
+      <div style="margin-top: 32px; display: flex; gap: 12px;">
+        <button class="btn btn-primary" id="resetGameBtn" style="flex: 1;">Reset Game</button>
+        <button class="btn" id="resetSettingsBtn">Reset Settings</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="winnerOverlay" class="winner-overlay" hidden>
+    <div class="glass-panel winner-card">
+      <h1 id="winnerTitle" class="text-gradient">Red Wins!</h1>
+      <p id="winnerSummary">Match Summary</p>
+      <button id="winnerNewGame" class="btn btn-primary" style="margin-top: 24px;">Play Again</button>
+    </div>
+  </div>
+
+  <script src="play.js"></script>
+</body>
+</html>
